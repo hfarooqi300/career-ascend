@@ -143,7 +143,15 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      order_status: "pending" | "paid" | "completed" | "refunded"
+      order_status:
+        | "pending"
+        | "paid"
+        | "completed"
+        | "refunded"
+        | "booked"
+        | "intake_complete"
+        | "processing"
+        | "complete"
       tier_type: "text_review" | "coaching"
     }
     CompositeTypes: {
@@ -272,7 +280,16 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      order_status: ["pending", "paid", "completed", "refunded"],
+      order_status: [
+        "pending",
+        "paid",
+        "completed",
+        "refunded",
+        "booked",
+        "intake_complete",
+        "processing",
+        "complete",
+      ],
       tier_type: ["text_review", "coaching"],
     },
   },

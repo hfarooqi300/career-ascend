@@ -60,6 +60,31 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
+## Backend Architecture
+
+The backend has been migrated to **Vercel Serverless Functions** for production reliability and scalability.
+
+- **API Routes**: Located in `/api/`
+- **Payments**: Handled via Stripe Checkout and Webhooks
+- **Persistence**: Abstracted in `/api/_lib/db.ts` (currently uses Supabase)
+
+### Deployment to Vercel
+
+1. **Install Vercel CLI**: `npm i -g vercel`
+2. **Link Project**: `vercel link`
+3. **Set Environment Variables**:
+   Add the following in the Vercel Dashboard:
+   - `STRIPE_SECRET_KEY`
+   - `STRIPE_WEBHOOK_SECRET`
+   - `SUPABASE_URL`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+4. **Deploy**: `vercel deploy --prod`
+
+### Local Development
+
+1. Run the development server: `npm run dev`
+2. Use Vercel CLI to test functions locally: `vercel dev`
+
 ## How can I deploy this project?
 
 Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.

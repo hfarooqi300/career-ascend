@@ -83,8 +83,10 @@ const Intake = () => {
         resumeUrl = await uploadResume();
       }
 
-      const { data, error } = await supabase.functions.invoke("submit-intake", {
-        body: {
+      const response = await fetch("/api/submit-intake", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           orderId,
           fullName,
           email,
@@ -92,10 +94,11 @@ const Intake = () => {
           targetRoles,
           biggestChallenge,
           resumeUrl,
-        },
+        }),
       });
 
-      if (error) throw error;
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Failed to submit form");
 
       toast.success("Intake form submitted successfully!");
 

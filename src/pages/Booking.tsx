@@ -43,22 +43,21 @@ const Booking = () => {
 
     setIsSubmitting(true);
     try {
-      const { data, error } = await supabase.functions.invoke("create-booking", {
-        body: { orderId, scheduledAt: scheduledAt.toISOString() },
+      const response = await fetch("/api/create-booking", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId, scheduledAt: scheduledAt.toISOString() }),
       });
 
-      if (error) throw error;
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Failed to create booking");
 
-      if (data?.calendarError) {
-        toast.warning("Booking created, but calendar invite could not be sent. You'll receive a confirmation email.");
-      } else {
-        toast.success("Booking confirmed! Check your email for the calendar invite.");
-      }
+      toast.success("Booking confirmed! Check your email for the calendar invite.");
 
       navigate(`/complete?order_id=${orderId}&booking=true`);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Booking error:", error);
-      toast.error("Failed to create booking. Please try again.");
+      toast.error(error.message || "Failed to create booking. Please try again.");
     } finally {
       setIsSubmitting(false);
     }

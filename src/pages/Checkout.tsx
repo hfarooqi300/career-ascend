@@ -14,7 +14,7 @@ const Checkout = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const initialTier = (searchParams.get("tier") as TierType) || "text_review";
-  
+
   const [selectedTier, setSelectedTier] = useState<TierType>(initialTier);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -28,17 +28,21 @@ const Checkout = () => {
 
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke("create-checkout", {
-        body: { tier: selectedTier, email, fullName },
+      const response = await fetch("/api/create-checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tier: selectedTier, email, fullName }),
       });
 
-      if (error) throw error;
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Failed to start checkout");
+
       if (data?.url) {
         window.open(data.url, "_blank");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Checkout error:", error);
-      toast.error("Failed to start checkout. Please try again.");
+      toast.error(error.message || "Failed to start checkout. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -58,11 +62,10 @@ const Checkout = () => {
           {Object.values(TIERS).map((tier) => (
             <Card
               key={tier.id}
-              className={`cursor-pointer transition-all ${
-                selectedTier === tier.id
+              className={`cursor-pointer transition-all ${selectedTier === tier.id
                   ? "ring-2 ring-primary shadow-lg"
                   : "hover:shadow-md"
-              }`}
+                }`}
               onClick={() => setSelectedTier(tier.id as TierType)}
             >
               <CardHeader>

@@ -24,12 +24,17 @@ const Success = () => {
         return;
       }
 
+      const requestId = searchParams.get("request_id");
+
       try {
-        const { data, error } = await supabase.functions.invoke("verify-payment", {
-          body: { sessionId, orderId },
+        const response = await fetch("/api/verify-payment", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sessionId, requestId, orderId }), // orderId kept for backward compat if any
         });
 
-        if (error) throw error;
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Failed to verify payment");
 
         if (data?.success) {
           setOrder(data.order);
@@ -37,9 +42,9 @@ const Success = () => {
         } else {
           setVerificationError(data?.message || "Payment verification failed");
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("Verification error:", error);
-        setVerificationError("Failed to verify payment");
+        setVerificationError(error.message || "Failed to verify payment");
       } finally {
         setIsVerifying(false);
       }

@@ -10,6 +10,8 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey);
 export interface OrderRecord {
     request_id: string;
     email: string;
+    full_name: string;
+    tier: string;
     product_type: string;
     stripe_session_id?: string;
     stripe_payment_intent_id?: string;
@@ -23,15 +25,21 @@ export const db = {
         const { data, error } = await supabase
             .from('orders')
             .insert({
-                ...order,
+                request_id: order.request_id,
+                email: order.email,
+                full_name: order.full_name,
+                tier: order.tier,
+                product_type: order.product_type,
                 status: order.payment_status || 'pending',
-                // Map fields to match the existing schema if necessary, 
-                // but here we align with the Vercel-first tracking
-            })
+                amount_cents: order.amount_cents,
+            } as any)
             .select()
             .single();
 
-        if (error) throw error;
+        if (error) {
+            console.error('[DB] createOrder error:', error);
+            throw error;
+        }
         return data;
     },
 

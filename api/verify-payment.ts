@@ -3,7 +3,7 @@ import Stripe from 'stripe';
 import { db } from './_lib/db';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-    apiVersion: '2025-08-27.basil' as any,
+    apiVersion: '2025-12-15.clover',
 });
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {

@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { db } from './_lib/db';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-    apiVersion: '2025-08-27.basil' as any,
+    apiVersion: '2025-12-15.clover',
 });
 
 const PRICE_IDS: Record<string, string> = {
@@ -48,6 +48,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         await db.createOrder({
             request_id: requestId,
             email,
+            full_name: fullName, // Ensure fullName is included
+            tier: tier, // MANDATORY: satisfying the NOT NULL constraint
             product_type: productType,
             payment_status: 'pending',
             amount_cents: productType === 'resume_text' ? 9900 : 29900,
